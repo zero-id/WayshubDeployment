@@ -1,0 +1,70 @@
+.color {
+  color: #ff7a00;
+}
+
+.bg {
+  background-color: #161616 !important;
+}
+
+.btn-bg {
+  background: #ff7a00 !important;
+  border: 1px solid #ff7a00 !important;
+}
+
+.bg-form {
+  background-color: #161616;
+}
+
+.bg-side-bar {
+  background-color: #151515;
+}
+
+.height-side-bar {
+  height: 100vh;
+}
+
+.margin-top-content {
+  margin-top: 100px;
+}
+
+.width-video {
+  width: 350px;
+  height: 203px;
+}
+
+.width-video-my-channel {
+  width: 330px;
+  height: 203px;
+}
+
+.flexNoWarp {
+  flex-wrap: nowrap !important;
+}
+
+.warp {
+  flex-wrap: wrap !important;
+}
+
+.bg-body {
+  background-color: #0b0b0b !important;
+}
+
+.margin-right {
+  margin-right: 0 !important;
+}
+
+.bg-drop-down {
+  background-color: #151515;
+}
+
+.drop-down:hover {
+  background-color: #151515 !important;
+}
+
+.color-name-channel {
+  color: #555555;
+}
+
+.color-name-channel:hover {
+  color: #555555;
+}
