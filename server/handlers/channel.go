@@ -1,8 +1,11 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	channeldto "wayshub/dto/channel"
 	dto "wayshub/dto/result"
@@ -10,11 +13,13 @@ import (
 	"wayshub/pkg/bcrypt"
 	"wayshub/repositories"
 
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
 )
 
-var path_file = "http://localhost:8080/uploads/"
+// var os.Getenv("PATH_FILE") = "http://localhost:8080/uploads/"
 
 type handlerChannel struct {
 	ChannelRepository repositories.ChannelRepository
@@ -35,11 +40,11 @@ func (h *handlerChannel) FindChannels(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i, p := range channels {
-		channels[i].Cover = path_file + p.Cover
+		channels[i].Cover = os.Getenv("PATH_FILE") + p.Cover
 	}
 
 	for i, p := range channels {
-		channels[i].Photo = path_file + p.Photo
+		channels[i].Photo = os.Getenv("PATH_FILE") + p.Photo
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -60,19 +65,19 @@ func (h *handlerChannel) GetChannel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	channel.Cover = path_file + channel.Cover
-	channel.Photo = path_file + channel.Photo
+	channel.Cover = os.Getenv("PATH_FILE") + channel.Cover
+	channel.Photo = os.Getenv("PATH_FILE") + channel.Photo
 
 	for i, p := range channel.Video {
-		channel.Video[i].Thumbnail = path_file + p.Thumbnail
+		channel.Video[i].Thumbnail = os.Getenv("PATH_FILE") + p.Thumbnail
 	}
 
 	for i, p := range channel.Video {
-		channel.Video[i].Video = path_file + p.Video
+		channel.Video[i].Video = os.Getenv("PATH_FILE") + p.Video
 	}
 
 	for i, p := range channel.Subscription {
-		channel.Subscription[i].OtherPhoto = path_file + p.OtherPhoto
+		channel.Subscription[i].OtherPhoto = os.Getenv("PATH_FILE") + p.OtherPhoto
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -95,10 +100,10 @@ func (h *handlerChannel) UpdateChannel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// var ctx = context.Background()
-	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
-	// var API_KEY = os.Getenv("API_KEY")
-	// var API_SECRET = os.Getenv("API_SECRET")
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
 
 	dataCover := r.Context().Value("dataCover")
 	fileCover := dataCover.(string)
@@ -106,25 +111,25 @@ func (h *handlerChannel) UpdateChannel(w http.ResponseWriter, r *http.Request) {
 	dataPhoto := r.Context().Value("dataPhoto")
 	filePhoto := dataPhoto.(string)
 
-	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
-	// resp1, err := cld.Upload.Upload(ctx, fileCover, uploader.UploadParams{Folder: "WaysHub"})
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
+	resp1, err := cld.Upload.Upload(ctx, fileCover, uploader.UploadParams{Folder: "WaysHub"})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
-	// resp2, err := cld.Upload.Upload(ctx, filePhoto, uploader.UploadParams{Folder: "WaysHub"})
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
+	resp2, err := cld.Upload.Upload(ctx, filePhoto, uploader.UploadParams{Folder: "WaysHub"})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
 	request := channeldto.UpdateChannelRequest{
 		Email:       r.FormValue("email"),
 		Password:    r.FormValue("password"),
 		ChannelName: r.FormValue("channelName"),
 		Description: r.FormValue("description"),
-		Cover:       fileCover,
-		Photo:       filePhoto,
+		Cover:       resp1.SecureURL,
+		Photo:       resp2.SecureURL,
 	}
 
 	password, err := bcrypt.HashingPassword(request.Password)
@@ -155,12 +160,13 @@ func (h *handlerChannel) UpdateChannel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if request.Cover != "false" {
-		channel.Cover = request.Cover
+		channel.Cover = resp1.SecureURL
 	}
 
 	if request.Photo != "false" {
-		channel.Photo = request.Photo
+		channel.Photo = resp2.SecureURL
 	}
+
 	if request.Description != "" {
 		channel.Description = request.Description
 	}
@@ -173,8 +179,8 @@ func (h *handlerChannel) UpdateChannel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	channel.Cover = path_file + channel.Cover
-	channel.Photo = path_file + channel.Photo
+	channel.Cover = os.Getenv("PATH_FILE") + channel.Cover
+	channel.Photo = os.Getenv("PATH_FILE") + channel.Photo
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Status: "success", Data: updateResponse(data)}

@@ -64,10 +64,10 @@ func UploadPhoto(next http.HandlerFunc) http.HandlerFunc {
 		tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		filePhoto := data[8:] // split uploads/
+		// filePhoto := data[8:] // split uploads/
 
 		// add filename to ctx
-		ctx := context.WithValue(r.Context(), "dataPhoto", filePhoto)
+		ctx := context.WithValue(r.Context(), "dataPhoto", data)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

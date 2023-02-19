@@ -64,10 +64,10 @@ func UploadThumbnail(next http.HandlerFunc) http.HandlerFunc {
 		tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		fileThumbnail := data[8:] // split uploads/
+		// fileThumbnail := data[8:] // split uploads/
 
 		// add filename to ctx
-		ctx := context.WithValue(r.Context(), "dataThumbnail", fileThumbnail)
+		ctx := context.WithValue(r.Context(), "dataThumbnail", data)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

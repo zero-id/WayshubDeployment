@@ -1,8 +1,11 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 	dto "wayshub/dto/result"
@@ -10,6 +13,8 @@ import (
 	"wayshub/models"
 	"wayshub/repositories"
 
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
@@ -35,13 +40,13 @@ func (h *handlerVideo) FindVideos(w http.ResponseWriter, r *http.Request) {
 
 	for i, p := range videos {
 		// videos[i].Thumbnail = path_file + p.Thumbnail
-		thumbnailPath := path_file + p.Thumbnail
+		thumbnailPath := os.Getenv("PATH_FILE") + p.Thumbnail
 		videos[i].Thumbnail = thumbnailPath
 	}
 
 	for i, p := range videos {
-		// videos[i].Video = path_file + p.Video
-		videoPath := path_file + p.Video
+		// videos[i].Video = os.Getenv("PATH_FILE") + p.Video
+		videoPath := os.Getenv("PATH_FILE") + p.Video
 		videos[i].Video = videoPath
 	}
 
@@ -64,8 +69,8 @@ func (h *handlerVideo) GetVideo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	video.Thumbnail = path_file + video.Thumbnail
-	video.Video = path_file + video.Video
+	video.Thumbnail = os.Getenv("PATH_FILE") + video.Thumbnail
+	video.Video = os.Getenv("PATH_FILE") + video.Video
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Status: "success", Data: video}
@@ -78,10 +83,10 @@ func (h *handlerVideo) CreateVideo(w http.ResponseWriter, r *http.Request) {
 	channelInfo := r.Context().Value("channelInfo").(jwt.MapClaims)
 	channelID := int(channelInfo["id"].(float64))
 
-	// var ctx = context.Background()
-	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
-	// var API_KEY = os.Getenv("API_KEY")
-	// var API_SECRET = os.Getenv("API_SECRET")
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
 
 	dataThumbnail := r.Context().Value("dataThumbnail")
 	fileThumbnail := dataThumbnail.(string)
@@ -89,17 +94,17 @@ func (h *handlerVideo) CreateVideo(w http.ResponseWriter, r *http.Request) {
 	dataVideo := r.Context().Value("dataVideo")
 	fileVideo := dataVideo.(string)
 
-	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
-	// resp1, err := cld.Upload.Upload(ctx, fileThumbnail, uploader.UploadParams{Folder: "WaysHub"})
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
+	resp1, err := cld.Upload.Upload(ctx, fileThumbnail, uploader.UploadParams{Folder: "wayshub"})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
-	// resp2, err := cld.Upload.Upload(ctx, fileVideo, uploader.UploadParams{Folder: "WaysHub"})
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
+	resp2, err := cld.Upload.Upload(ctx, fileVideo, uploader.UploadParams{Folder: "wayshub"})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
 	request := videodto.CreateVideoRequest{
 		Title:       r.FormValue("title"),
@@ -107,7 +112,7 @@ func (h *handlerVideo) CreateVideo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	validation := validator.New()
-	err := validation.Struct(request)
+	err = validation.Struct(request)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
@@ -117,9 +122,9 @@ func (h *handlerVideo) CreateVideo(w http.ResponseWriter, r *http.Request) {
 
 	video := models.Video{
 		Title:       request.Title,
-		Thumbnail:   fileThumbnail,
+		Thumbnail:   resp1.SecureURL,
 		Description: request.Description,
-		Video:       fileVideo,
+		Video:       resp2.SecureURL,
 		CreatedAt:   time.Now(),
 		ChannelID:   channelID,
 	}
@@ -165,8 +170,6 @@ func (h *handlerVideo) UpdateVideo(w http.ResponseWriter, r *http.Request) {
 	request := videodto.UpdateVideoRequest{
 		Title:       r.FormValue("title"),
 		Description: r.FormValue("description"),
-		Thumbnail:   fileThumbnail,
-		Video:       fileVideo,
 	}
 
 	video, err := h.VideoRepository.GetVideo(int(id))
@@ -185,12 +188,12 @@ func (h *handlerVideo) UpdateVideo(w http.ResponseWriter, r *http.Request) {
 		video.Description = request.Description
 	}
 
-	if request.Thumbnail != "false" {
-		video.Thumbnail = request.Thumbnail
+	if fileThumbnail != "false" {
+		video.Thumbnail = fileThumbnail
 	}
 
-	if request.Thumbnail != "false" {
-		video.Video = request.Video
+	if fileVideo != "false" {
+		video.Video = fileVideo
 	}
 
 	data, err := h.VideoRepository.UpdateVideo(video)
@@ -201,8 +204,8 @@ func (h *handlerVideo) UpdateVideo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	video.Thumbnail = path_file + video.Thumbnail
-	video.Video = path_file + video.Video
+	video.Thumbnail = os.Getenv("PATH_FILE") + video.Thumbnail
+	video.Video = os.Getenv("PATH_FILE") + video.Video
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Status: "success", Data: data}
@@ -255,8 +258,8 @@ func (h *handlerVideo) FindVideosByChannelId(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	videos.Thumbnail = path_file + videos.Thumbnail
-	videos.Video = path_file + videos.Video
+	videos.Thumbnail = os.Getenv("PATH_FILE") + videos.Thumbnail
+	videos.Video = os.Getenv("PATH_FILE") + videos.Video
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Status: "success", Data: videos}
@@ -277,11 +280,11 @@ func (h *handlerVideo) FindMyVideos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i, p := range videos {
-		videos[i].Thumbnail = path_file + p.Thumbnail
+		videos[i].Thumbnail = os.Getenv("PATH_FILE") + p.Thumbnail
 	}
 
 	for i, p := range videos {
-		videos[i].Video = path_file + p.Video
+		videos[i].Video = os.Getenv("PATH_FILE") + p.Video
 	}
 
 	w.WriteHeader(http.StatusOK)

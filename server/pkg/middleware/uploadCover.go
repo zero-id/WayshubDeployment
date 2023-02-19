@@ -64,10 +64,10 @@ func UploadCover(next http.HandlerFunc) http.HandlerFunc {
 		tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		fileCover := data[8:] // split uploads/
+		// fileCover := data[8:] // split uploads/
 
 		// add filename to ctx
-		ctx := context.WithValue(r.Context(), "dataCover", fileCover)
+		ctx := context.WithValue(r.Context(), "dataCover", data)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
