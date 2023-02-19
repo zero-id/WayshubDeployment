@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"wayshub/database"
 	"wayshub/pkg/mysql"
 	"wayshub/routes"
 
 	"github.com/gorilla/handlers"
+	"github.com/joho/godotenv"
 
 	"github.com/gorilla/mux"
 	// import "godotenv" here ...
@@ -16,6 +18,10 @@ import (
 func main() {
 
 	// Init godotenv here ...
+	errEnv := godotenv.Load()
+	if errEnv != nil {
+		panic("Failed to load env file")
+	}
 
 	// initial DB
 	mysql.DatabaseInit()
@@ -35,9 +41,9 @@ func main() {
 	var AllowedMethods = handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS", "PATCH", "DELETE"})
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
 
-	var port = "8080"
+	var port = os.Getenv("PORT")
 	fmt.Println("server running localhost:" + port)
 
 	// Embed the setup allowed in 2 parameter on this below code ...
-	http.ListenAndServe("localhost:"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 }
