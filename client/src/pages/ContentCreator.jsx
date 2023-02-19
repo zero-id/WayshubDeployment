@@ -82,11 +82,11 @@ export default function ContentCreator(props) {
     <>
       <Navbars />
       <Container className="margin-top-content" fluid>
-        <img width="100%" style={{ height: "300px", objectFit: "cover" }} src={getChannelById?.cover != "http://localhost:8080/uploads/" ? getChannelById?.cover : Cover} alt="" />
+        <img width="100%" style={{ height: "300px", objectFit: "cover" }} src={getChannelById?.cover  ? getChannelById?.cover : Cover} alt="" />
         <Container className="mt-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div className="d-flex gap-3 align-items-center">
-              <img style={{ width: "100px", height: "100px", objectFit: "cover" }} width={100} src={getChannelById?.photo != "http://localhost:8080/uploads/" ? getChannelById?.photo : Fp} alt="" />
+              <img style={{ width: "100px", height: "100px", objectFit: "cover" }} width={100} src={getChannelById?.photo  ? getChannelById?.photo : Fp} alt="" />
               <div className="d-flex  flex-column">
                 <p className="text-white p-0 m-0 fw-bold fs-1">{getChannelById?.channelName}</p>
                 <p className="text-white p-0 m-0 ">{getChannelById?.subscriber} Subscriber</p>

@@ -128,12 +128,7 @@ export default function DetailVideo(props) {
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center gap-3">
                   <div style={{ width: "100px", height: "100px" }}>
-                    <img
-                      style={{ cursor: "pointer", objectFit: "cover", width: "100px", height: "100px" }}
-                      onClick={() => handleClick(getVideoById?.channel.id)}
-                      src={getVideoById?.channel.photo ? "http://localhost:8080/uploads/" + getVideoById?.channel.photo : Fp}
-                      alt=""
-                    />
+                    <img style={{ cursor: "pointer", objectFit: "cover", width: "100px", height: "100px" }} onClick={() => handleClick(getVideoById?.channel.id)} src={getVideoById?.channel.photo ? getVideoById?.channel.photo : Fp} alt="" />
                   </div>
                   <div>
                     <p className="text-white p-0 m-0 fw-bold fs-4">{getVideoById?.channel.channelName}</p>
@@ -177,7 +172,7 @@ export default function DetailVideo(props) {
                   <div className="d-flex align-items-center gap">
                     {comment?.channel.photo ? (
                       <img
-                        src={"http://localhost:8080/uploads/" + comment?.channel.photo}
+                        src={comment?.channel.photo}
                         alt="profile"
                         style={{
                           width: "50px",

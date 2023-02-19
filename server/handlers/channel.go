@@ -185,7 +185,6 @@ func (h *handlerChannel) UpdateChannel(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Status: "success", Data: updateResponse(data)}
 	json.NewEncoder(w).Encode(response)
-
 }
 
 func (h *handlerChannel) DeleteChannel(w http.ResponseWriter, r *http.Request) {

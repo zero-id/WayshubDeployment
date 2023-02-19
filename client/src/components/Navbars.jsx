@@ -75,7 +75,7 @@ function Navbars(props) {
               {getChannels?.map((value) => {
                 return (
                   <div key={value.id} className="d-flex align-items-center gap-3">
-                    <img onClick={() => handleChannelClick(value?.id)} style={{ width: "50px", height: "50px", objectFit: "cover" }} src={value.photo != "http://localhost:8080/uploads/" ? value.photo : Fp} alt="" />
+                    <img onClick={() => handleChannelClick(value?.id)} style={{ width: "50px", height: "50px", objectFit: "cover" }} src={value.photo ? value.photo : Fp} alt="" />
                     <span className="text-white fw-bold fs-6">{value.channelName}</span>
                   </div>
                 );

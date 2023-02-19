@@ -35,11 +35,11 @@ export default function MyChannel() {
     <>
       <Navbars />
       <Container className="margin-top-content" fluid>
-        <img width="100%" style={{ height: "300px", objectFit: "cover" }} src={getChannel?.cover != "http://localhost:8080/uploads/" ? getChannel?.cover : Cover} alt="" />
+        <img width="100%" style={{ height: "300px", objectFit: "cover" }} src={getChannel?.cover ? getChannel?.cover : Cover} alt="" />
         <Container className="mt-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div className="d-flex gap-3 align-items-center">
-              <img style={{ width: "100px", height: "100px", objectFit: "cover" }} width={100} src={getChannel?.photo != "http://localhost:8080/uploads/" ? getChannel?.photo : Fp} alt="" />
+              <img style={{ width: "100px", height: "100px", objectFit: "cover" }} width={100} src={getChannel?.photo ? getChannel?.photo : Fp} alt="" />
               <div className="d-flex  flex-column">
                 <p className="text-white p-0 m-0 fw-bold fs-1">{getChannel?.channelName}</p>
                 <p className="text-white p-0 m-0 ">{getChannel?.subscriber} Subscriber</p>
