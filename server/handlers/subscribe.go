@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strconv"
 	dto "wayshub/dto/result"
 	subscribedto "wayshub/dto/subscribe"
@@ -22,21 +23,6 @@ func HandlerSubscribe(SubscribeRepository repositories.SubscribeRepository) *han
 	return &handlerSubscribe{SubscribeRepository}
 }
 
-// func (h *handlerSubscribe) FindSubscribes(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	subscribes, err := h.SubscribeRepository.FindSubscribes()
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 	}
-
-// 	w.WriteHeader(http.StatusOK)
-// 	response := dto.SuccessResult{Status: "success", Data: subscribes}
-// 	json.NewEncoder(w).Encode(response)
-// }
-
 func (h *handlerSubscribe) FindSubscribes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -51,11 +37,11 @@ func (h *handlerSubscribe) FindSubscribes(w http.ResponseWriter, r *http.Request
 	}
 
 	for i, p := range subscribes {
-		subscribes[i].OtherPhoto = path_file + p.OtherPhoto
+		subscribes[i].OtherPhoto = os.Getenv("PATH_FILE") + p.OtherPhoto
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: subscribes}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: subscribes}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -73,8 +59,8 @@ func (h *handlerSubscribe) GetSubscribe(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: subscribe}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: subscribe}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -92,8 +78,8 @@ func (h *handlerSubscribe) GetSubscribeByOther(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: subscribe}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: subscribe}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -145,8 +131,8 @@ func (h *handlerSubscribe) CreateSubscribe(w http.ResponseWriter, r *http.Reques
 
 	// subscribe, _ = h.SubscribeRepository.GetSubscribe(subscribe.ID)
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: subscribe}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: subscribe}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -172,8 +158,8 @@ func (h *handlerSubscribe) DeleteSubscribe(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: data}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -194,7 +180,7 @@ func (h *handlerSubscribe) GetSubscription(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: subscribe}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: subscribe}
 	json.NewEncoder(w).Encode(response)
 }

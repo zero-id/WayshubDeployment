@@ -4,13 +4,21 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { UserContextProvider } from "./context/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const client = new QueryClient();
+
 root.render(
   <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
+    <UserContextProvider>
+      <QueryClientProvider client={client}>
+        <Router>
+          <App />
+        </Router>
+      </QueryClientProvider>
+    </UserContextProvider>
   </React.StrictMode>
 );
 

@@ -33,8 +33,8 @@ func (h *handlerComment) FindComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: comments}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: comments}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -51,8 +51,8 @@ func (h *handlerComment) GetComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: comment}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: comment}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -93,8 +93,8 @@ func (h *handlerComment) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	comment, _ = h.CommentRepository.GetComment(comment.ID)
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: comment}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: comment}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -137,8 +137,8 @@ func (h *handlerComment) UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: data}
 	json.NewEncoder(w).Encode(response)
 
 }
@@ -174,8 +174,8 @@ func (h *handlerComment) DeleteComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: DeleteCommentResponse(data)}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: DeleteCommentResponse(data)}
 	json.NewEncoder(w).Encode(response)
 }
 

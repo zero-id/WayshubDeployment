@@ -20,29 +20,28 @@ func RepositoryChannel(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-
 func (r *repository) FindChannels() ([]models.Channel, error) {
 	var channels []models.Channel
-	err := r.db.Find(&channels).Error
+	err := r.db.Preload("Subscription.Channel").Preload("Video.Channel").Find(&channels).Error
 
 	return channels, err
 }
 
 func (r *repository) GetChannel(ID int) (models.Channel, error) {
 	var channel models.Channel
-	err := r.db.First(&channel, ID).Error
+	err := r.db.Preload("Subscription.Channel").Preload("Video.Channel").First(&channel, ID).Error
 
 	return channel, err
 }
 
 func (r *repository) UpdateChannel(channel models.Channel) (models.Channel, error) {
-	err := r.db.Preload("Subscription.Channel").Preload("Video.Channel").Save(&channel).Error
+	err := r.db.Save(&channel).Error
 
 	return channel, err
 }
 
 func (r *repository) PlusSubscriber(channel models.Channel) (models.Channel, error) {
-	err := r.db.Preload("Subscription.Channel").Preload("Video.Channel").Preload("Channel").Save(&channel).Error
+	err := r.db.Preload("Channel").Save(&channel).Error
 
 	return channel, err
 }

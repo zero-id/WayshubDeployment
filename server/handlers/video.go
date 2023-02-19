@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 	dto "wayshub/dto/result"
@@ -35,19 +34,19 @@ func (h *handlerVideo) FindVideos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i, p := range videos {
-		// videos[i].Thumbnail = os.Getenv("PATH_FILE") + p.Thumbnail
-		thumbnailPath := os.Getenv("PATH_FILE") + p.Thumbnail
+		// videos[i].Thumbnail = path_file + p.Thumbnail
+		thumbnailPath := path_file + p.Thumbnail
 		videos[i].Thumbnail = thumbnailPath
 	}
 
 	for i, p := range videos {
-		// videos[i].Video = os.Getenv("PATH_FILE") + p.Video
-		videoPath := os.Getenv("PATH_FILE") + p.Video
+		// videos[i].Video = path_file + p.Video
+		videoPath := path_file + p.Video
 		videos[i].Video = videoPath
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: videos}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: videos}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -65,11 +64,11 @@ func (h *handlerVideo) GetVideo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	video.Thumbnail = os.Getenv("PATH_FILE") + video.Thumbnail
-	video.Video = os.Getenv("PATH_FILE") + video.Video
+	video.Thumbnail = path_file + video.Thumbnail
+	video.Video = path_file + video.Video
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: video}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: video}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -137,8 +136,8 @@ func (h *handlerVideo) CreateVideo(w http.ResponseWriter, r *http.Request) {
 
 	video, _ = h.VideoRepository.GetVideo(video.ID)
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: video}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: video}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -205,9 +204,10 @@ func (h *handlerVideo) UpdateVideo(w http.ResponseWriter, r *http.Request) {
 	video.Thumbnail = path_file + video.Thumbnail
 	video.Video = path_file + video.Video
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: data}
 	json.NewEncoder(w).Encode(response)
+
 }
 
 func (h *handlerVideo) DeleteVideo(w http.ResponseWriter, r *http.Request) {
@@ -236,8 +236,8 @@ func (h *handlerVideo) DeleteVideo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: DeleteVideoResponse(data)}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -255,11 +255,11 @@ func (h *handlerVideo) FindVideosByChannelId(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	videos.Thumbnail = os.Getenv("PATH_FILE") + videos.Thumbnail
-	videos.Video = os.Getenv("PATH_FILE") + videos.Video
+	videos.Thumbnail = path_file + videos.Thumbnail
+	videos.Video = path_file + videos.Video
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: videos}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: videos}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -284,8 +284,8 @@ func (h *handlerVideo) FindMyVideos(w http.ResponseWriter, r *http.Request) {
 		videos[i].Video = path_file + p.Video
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: videos}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: videos}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -316,8 +316,8 @@ func (h *handlerVideo) UpdateViews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: data}
 	json.NewEncoder(w).Encode(response)
 
 }

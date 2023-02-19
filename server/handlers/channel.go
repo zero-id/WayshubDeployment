@@ -34,10 +34,6 @@ func (h *handlerChannel) FindChannels(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 	}
 
-	// for i, p := range products {
-	// 	products[i].Image = path_file + p.Image
-	// }
-
 	for i, p := range channels {
 		channels[i].Cover = path_file + p.Cover
 	}
@@ -46,8 +42,8 @@ func (h *handlerChannel) FindChannels(w http.ResponseWriter, r *http.Request) {
 		channels[i].Photo = path_file + p.Photo
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: channels}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: channels}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -79,8 +75,8 @@ func (h *handlerChannel) GetChannel(w http.ResponseWriter, r *http.Request) {
 		channel.Subscription[i].OtherPhoto = path_file + p.OtherPhoto
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: channel}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: convertResponse(channel)}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -99,16 +95,16 @@ func (h *handlerChannel) UpdateChannel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dataCover := r.Context().Value("dataCover") // add this code
-	fileCover := dataCover.(string)             // add this code
-
-	dataPhoto := r.Context().Value("dataPhoto") // add this code
-	filePhoto := dataPhoto.(string)             // add this code
-
 	// var ctx = context.Background()
 	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
 	// var API_KEY = os.Getenv("API_KEY")
 	// var API_SECRET = os.Getenv("API_SECRET")
+
+	dataCover := r.Context().Value("dataCover")
+	fileCover := dataCover.(string)
+
+	dataPhoto := r.Context().Value("dataPhoto")
+	filePhoto := dataPhoto.(string)
 
 	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
@@ -158,11 +154,11 @@ func (h *handlerChannel) UpdateChannel(w http.ResponseWriter, r *http.Request) {
 		channel.ChannelName = request.ChannelName
 	}
 
-	if request.Cover != "" {
+	if request.Cover != "false" {
 		channel.Cover = request.Cover
 	}
 
-	if request.Photo != "" {
+	if request.Photo != "false" {
 		channel.Photo = request.Photo
 	}
 	if request.Description != "" {
@@ -180,8 +176,8 @@ func (h *handlerChannel) UpdateChannel(w http.ResponseWriter, r *http.Request) {
 	channel.Cover = path_file + channel.Cover
 	channel.Photo = path_file + channel.Photo
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: updateResponse(data)}
 	json.NewEncoder(w).Encode(response)
 
 }
@@ -208,8 +204,8 @@ func (h *handlerChannel) DeleteChannel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: deleteResponse(data)}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: deleteResponse(data)}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -236,9 +232,10 @@ func (h *handlerChannel) PlusSubscriber(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: deleteResponse(data)}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: data}
 	json.NewEncoder(w).Encode(response)
+
 }
 
 func (h *handlerChannel) MinusSubscriber(w http.ResponseWriter, r *http.Request) {
@@ -264,24 +261,35 @@ func (h *handlerChannel) MinusSubscriber(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: deleteResponse(data)}
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Status: "success", Data: data}
 	json.NewEncoder(w).Encode(response)
 }
 
-// func updateResponse(u models.Channel) channeldto.ChannelResponse {
-// 	return channeldto.ChannelResponse{
-// 		ID:           u.ID,
-// 		Email:        u.Email,
-// 		ChannelName:  u.ChannelName,
-// 		Description:  u.Description,
-// 		Cover:        u.Cover,
-// 		Photo:        u.Photo,
-// 		Video:        u.Video,
-// 		Subscription: u.Subscription,
-// 		Subscriber:   u.Subscriber,
-// 	}
-// }
+func convertResponse(u models.Channel) channeldto.ChannelResponse {
+	return channeldto.ChannelResponse{
+		ID:           u.ID,
+		Email:        u.Email,
+		ChannelName:  u.ChannelName,
+		Description:  u.Description,
+		Cover:        u.Cover,
+		Photo:        u.Photo,
+		Video:        u.Video,
+		Subscription: u.Subscription,
+		Subscriber:   u.Subscriber,
+	}
+}
+
+func updateResponse(u models.Channel) channeldto.ChannelResponse {
+	return channeldto.ChannelResponse{
+		ID:          u.ID,
+		Email:       u.Email,
+		ChannelName: u.ChannelName,
+		Description: u.Description,
+		Cover:       u.Cover,
+		Photo:       u.Photo,
+	}
+}
 
 func deleteResponse(u models.Channel) channeldto.DeleteResponse {
 	return channeldto.DeleteResponse{

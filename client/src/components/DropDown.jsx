@@ -1,10 +1,21 @@
 import Dropdown from "react-bootstrap/Dropdown";
-import React from "react";
+import React, { useContext } from "react";
 import Fp from "../assets/images/fp.jpg";
 import MyChannel from "../assets/images/My Chanel.png";
 import Logout from "../assets/images/Logout.png";
+import { UserContext } from "../context/UserContext";
+import { useNavigate } from "react-router";
 
 function DropDown() {
+  const navigate = useNavigate();
+  const [state, dispatch] = useContext(UserContext);
+  const logout = () => {
+    console.log(state);
+    dispatch({
+      type: "LOGOUT",
+    });
+    navigate("/sign-up");
+  };
   return (
     <Dropdown>
       <Dropdown.Toggle className="bg border-0" id="dropdown-basic">
@@ -15,7 +26,7 @@ function DropDown() {
         <Dropdown.Item className="drop-down mb-3" href="/my-channel">
           <img src={MyChannel} alt="" />
         </Dropdown.Item>
-        <Dropdown.Item className="drop-down" href="/sign-up">
+        <Dropdown.Item onClick={logout} className="drop-down" href="/sign-up">
           <img src={Logout} alt="" />
         </Dropdown.Item>
       </Dropdown.Menu>

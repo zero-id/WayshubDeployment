@@ -7,5 +7,5 @@ type UpdateChannelRequest struct {
 	Description string `json:"description" form:"description"`
 	Thumbnail   string `json:"thumbnail" form:"thumbnail"`
 	Photo       string `json:"photo" form:"photo"`
-	Cover       string `json:"cover" form:"thumbnail"`
+	Cover       string `json:"cover" form:"cover"`
 }

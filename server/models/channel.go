@@ -20,6 +20,7 @@ type ChannelVideoResponse struct {
 	Description string `json:"description"`
 	Cover       string `json:"cover"`
 	Photo       string `json:"photo"`
+	Subscriber   int         `json:"subscriber" gorm:"type: int"`
 }
 
 type OtherChannel struct {

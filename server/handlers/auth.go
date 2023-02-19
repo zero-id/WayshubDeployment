@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 	authdto "wayshub/dto/auth"
 	dto "wayshub/dto/result"
@@ -25,10 +26,10 @@ func HandlerAuth(AuthRepository repositories.AuthRepository) *handlerAuth {
 	return &handlerAuth{AuthRepository}
 }
 
-func (h *handlerAuth) SignUp(w http.ResponseWriter, r *http.Request) {
+func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	request := new(authdto.SignUpRequest)
+	request := new(authdto.RegisterRequest)
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
@@ -59,27 +60,22 @@ func (h *handlerAuth) SignUp(w http.ResponseWriter, r *http.Request) {
 		Description: request.Description,
 	}
 
-	data, err := h.AuthRepository.SignUp(channel)
+	data, err := h.AuthRepository.Register(channel)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
 	}
 
-	signUpResponse := authdto.SignUpResponse{
-		Email:   data.Email,
-		Message: "Succsesfully SignUp!",
-	}
-
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: signUpResponse}
+	response := dto.SuccessResult{Status: "success", Data: registerResponse(data)}
 	json.NewEncoder(w).Encode(response)
 }
 
-func (h *handlerAuth) SignIn(w http.ResponseWriter, r *http.Request) {
+func (h *handlerAuth) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	request := new(authdto.SignInRequest)
+	request := new(authdto.LoginRequest)
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
@@ -92,7 +88,7 @@ func (h *handlerAuth) SignIn(w http.ResponseWriter, r *http.Request) {
 		Password: request.Password,
 	}
 
-	channel, err := h.AuthRepository.SignIn(channel.Email)
+	channel, err := h.AuthRepository.Login(channel.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "Wrong email or password!"}
@@ -120,16 +116,50 @@ func (h *handlerAuth) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginResponse := authdto.SignInResponse{
+	loginResponse := authdto.LoginResponse{
 		ID:    channel.ID,
 		Email: channel.Email,
 		Photo: channel.Photo,
 		Token: token,
 	}
 
-	// channel.Photo = os.Getenv("PATH_FILE") + channel.Photo
+	channel.Photo = os.Getenv("PATH_FILE") + channel.Photo
 
 	w.Header().Set("Content-Type", "application/json")
-	response := dto.SuccessResult{Code: http.StatusOK, Data: loginResponse}
+	response := dto.SuccessResult{Status: "success", Data: loginResponse}
 	json.NewEncoder(w).Encode(response)
+
+}
+
+func (h *handlerAuth) CheckAuth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	channelInfo := r.Context().Value("channelInfo").(jwt.MapClaims)
+	channelId := int(channelInfo["id"].(float64))
+
+	channel, err := h.AuthRepository.Getchannel(channelId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	CheckAuthResponse := authdto.CheckAuthResponse{
+		ID:    channel.ID,
+		Email: channel.Email,
+		Photo: channel.Photo,
+	}
+
+	channel.Photo = os.Getenv("PATH_FILE") + channel.Photo
+
+	w.Header().Set("Content-Type", "application/json")
+	response := dto.SuccessResult{Status: "success", Data: CheckAuthResponse}
+	json.NewEncoder(w).Encode(response)
+}
+
+func registerResponse(u models.Channel) authdto.RegisterResponse {
+	return authdto.RegisterResponse{
+		Email: u.Email,
+	}
 }
