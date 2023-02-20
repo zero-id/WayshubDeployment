@@ -16,6 +16,66 @@ export default function DetailVideo(props) {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // Fetch Videos By Id
+  const { data: getVideoById, refetch: channelRefetch } = useQuery("detailVideoIdCache", async () => {
+    const response = await API.get(`/video/${id}`);
+    return response.data.data;
+  });
+
+  console.log(getVideoById);
+
+  // Mengambil data subscription user yang login
+  const { data: channelLogin, refetch: loginRefetch } = useQuery("channelLoginCache", async () => {
+    const response = await API.get(`/channel/${state?.user.id}`);
+    return response.data.data.subscription;
+  });
+
+  let channel = [];
+
+  channelLogin?.filter((subs) => {
+    if (subs.other_id == getVideoById.channel.id) {
+      channel.push(subs);
+    }
+    console.log(subs);
+  });
+
+  const [channelId] = channel;
+
+  // Post handle untuk mengirim data ke database
+  const handleSubs = useMutation(async (e) => {
+    try {
+      e.preventDefault();
+
+      const response = await API.post(`/subscribe/${getVideoById.channel.id}`);
+      const plusSub = await API.patch(`/plusSubs/${getVideoById.channel.id}`);
+      if (response.status == 200 && plusSub.status == 200) {
+        channelRefetch();
+        loginRefetch();
+        props.refetch();
+      }
+    } catch (err) {
+      alert("FAILED");
+      console.log(err.data);
+    }
+  });
+
+  const handleUnsub = useMutation(async (e) => {
+    try {
+      e.preventDefault();
+
+      const response = await API.delete(`/subscribe`);
+      const plusSub = await API.patch(`/minusSubs/${getVideoById.channel.id}`);
+      if (response.status == 200 && plusSub.status == 200) {
+        channelRefetch();
+        loginRefetch();
+        props.refetch();
+      }
+    } catch (err) {
+      alert("FAILED");
+      console.log(err);
+    }
+  });
+
   // Mengambil data komentar
   const { data: getAllComments, refetch: refetchComment } = useQuery("getAllComments", async () => {
     const response = await API.get(`/comments`);
@@ -35,12 +95,6 @@ export default function DetailVideo(props) {
   // Mengambil data login
   const { data: getLoginChannel } = useQuery("getLoginChannelIdCache", async () => {
     const response = await API.get(`/channel/${state?.user.id}`);
-    return response.data.data;
-  });
-
-  // Fetch Videos By Id
-  const { data: getVideoById } = useQuery("detailVideoIdCache", async () => {
-    const response = await API.get(`/video/${id}`);
     return response.data.data;
   });
 
@@ -136,7 +190,7 @@ export default function DetailVideo(props) {
                   </div>
                 </div>
                 <div className="d-flex align-items-center">
-                  {/* <Link>
+                  <Link>
                     {channelId?.other_id ? (
                       <Button className="btn-bg" onClick={(e) => handleUnsub.mutate(e)}>
                         unsubscribe
@@ -146,7 +200,7 @@ export default function DetailVideo(props) {
                         Subscribe
                       </Button>
                     )}
-                  </Link> */}
+                  </Link>
                 </div>
               </div>
               <div className="my-5">
