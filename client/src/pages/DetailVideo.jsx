@@ -206,7 +206,7 @@ export default function DetailVideo(props) {
               return (
                 <div key={value.id} className="d-flex flex-column mb-2 p-2 rounded pt-0" style={{ width: "360px", backgroundColor: "#0b0b0b" }}>
                   <Card.Body className="d-flex flex-column gap-2">
-                    <Link to={`/video-detail/${value.id} `} className="text-decoration-none">
+                    <Link onClick={() => window.location.reload()} to={`/video-detail/${value.id} `} className="text-decoration-none">
                       <Card.Img className="width-video rounded mb-2" variant="top" src={value.thumbnail} />
                       <Card.Title className="text-white">{value.title}</Card.Title>
                     </Link>
