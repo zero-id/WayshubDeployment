@@ -190,17 +190,19 @@ export default function DetailVideo(props) {
                   </div>
                 </div>
                 <div className="d-flex align-items-center">
-                  <Link>
-                    {channelId?.other_id ? (
-                      <Button className="btn-bg" onClick={(e) => handleUnsub.mutate(e)}>
-                        unsubscribe
-                      </Button>
-                    ) : (
-                      <Button className="bg-light border-0 text-dark" onClick={(e) => handleSubs.mutate(e)}>
-                        Subscribe
-                      </Button>
-                    )}
-                  </Link>
+                  {getVideoById?.channel?.id != state?.user.id ? (
+                    <Link>
+                      {channelId?.other_id ? (
+                        <Button className="btn-bg" onClick={(e) => handleUnsub.mutate(e)}>
+                          unsubscribe
+                        </Button>
+                      ) : (
+                        <Button className="bg-light border-0 text-dark" onClick={(e) => handleSubs.mutate(e)}>
+                          Subscribe
+                        </Button>
+                      )}
+                    </Link>
+                  ) : null}
                 </div>
               </div>
               <div className="my-5">
