@@ -5,6 +5,8 @@ import MyChannel from "../assets/images/My Chanel.png";
 import Logout from "../assets/images/Logout.png";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router";
+import { API } from "../config/api";
+import { useQuery } from "react-query";
 
 function DropDown() {
   const navigate = useNavigate();
@@ -16,10 +18,17 @@ function DropDown() {
     });
     navigate("/sign-up");
   };
+
+  // Mengambil data subscription user yang login
+  const { data: channelLogin } = useQuery("channelLogin", async () => {
+    const response = await API.get(`/channel/${state?.user.id}`);
+    return response.data.data;
+  });
+  console.log(channelLogin);
   return (
     <Dropdown>
       <Dropdown.Toggle className="bg border-0" id="dropdown-basic">
-        <img src={Fp} alt="" width={35} />
+        <img src={channelLogin.photo ? channelLogin.photo : Fp} alt="" width={35} />
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="bg-drop-down">
