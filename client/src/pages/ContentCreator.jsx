@@ -29,8 +29,7 @@ export default function ContentCreator(props) {
     const response = await API.get(`/channel/${state?.user.id}`);
     return response.data.data.subscription;
   });
-
-  console.log(channelLogin)
+  
 
   let channel = [];
 
