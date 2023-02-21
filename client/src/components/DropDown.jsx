@@ -5,6 +5,8 @@ import MyChannel from "../assets/images/My Chanel.png";
 import Logout from "../assets/images/Logout.png";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router";
+import { useQuery } from "react-query";
+import { API } from "../config/api";
 
 function DropDown() {
   const navigate = useNavigate();
@@ -16,10 +18,17 @@ function DropDown() {
     });
     navigate("/sign-up");
   };
+
+  let { data: getChannel } = useQuery("channelLoginCache", async () => {
+    const response = await API.get(`channel/${state?.user.id}`);
+    return response.data.data;
+  });
+
+  console.log(getChannel);
   return (
     <Dropdown>
       <Dropdown.Toggle className="bg border-0" id="dropdown-basic">
-        <img src={Fp} alt="" width={35} />
+        <img src={getChannel?.photo ? getChannel?.photo : Fp} alt="" width={35} />
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="bg-drop-down">
