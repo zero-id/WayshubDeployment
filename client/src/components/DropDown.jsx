@@ -28,7 +28,7 @@ function DropDown() {
   return (
     <Dropdown>
       <Dropdown.Toggle className="bg border-0" id="dropdown-basic">
-        <img src={channelLogin.photo ? channelLogin.photo : Fp} alt="" width={35} />
+        <img src={channelLogin?.photo ? channelLogin.photo : Fp} alt="" width={35} />
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="bg-drop-down">

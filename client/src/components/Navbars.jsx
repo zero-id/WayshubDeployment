@@ -26,6 +26,8 @@ function Navbars(props) {
     return response.data.data;
   });
 
+  console.log(getChannels)
+
   // Mengambil id channel yang login
   const [state] = useContext(UserContext);
 
