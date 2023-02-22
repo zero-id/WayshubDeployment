@@ -10,6 +10,7 @@ import { useMutation, useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import Fp from "../assets/images/fp.jpg";
 import { UserContext } from "../context/UserContext";
+import ReactPlayer from "react-player";
 
 export default function DetailVideo(props) {
   // const navigate = useNavigate();
@@ -158,9 +159,10 @@ export default function DetailVideo(props) {
         <Row className="d-flex flex-warp m-0 p-0">
           <Col sm="9" className="p-0 pe-5 m-0">
             <Card className="border-0 bg-body d-flex flex-column gap-2">
-              <video controls>
+              {/* <video controls>
                 <source src={getVideoById?.video} type="video/mp4" />
-              </video>
+              </video> */}
+              <ReactPlayer width="100%" height="100%" controls={true} playing={true} url={getVideoById?.video} />
               <Card.Title className="bg-body text-white p-0 m-0">{getVideoById?.title}</Card.Title>
               <div className="d-flex gap-5">
                 <div className="d-flex gap-2">
