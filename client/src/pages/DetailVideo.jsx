@@ -34,7 +34,7 @@ export default function DetailVideo(props) {
   let channel = [];
 
   channelLogin?.filter((subs) => {
-    if (subs.other_id == getVideoById.channel.id) {
+    if (subs.other_id == getVideoById?.channel.id) {
       channel.push(subs);
     }
     console.log(subs);
