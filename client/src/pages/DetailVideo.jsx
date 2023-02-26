@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Container, Col, Card, Row, Form, Button } from "react-bootstrap";
 import Detail from "../assets/images/Detail.png";
 import Navbars from "../components/Navbars";
@@ -18,12 +18,10 @@ export default function DetailVideo(props) {
   const navigate = useNavigate();
 
   // Fetch Videos By Id
-  const { data: getVideoById, refetch: channelRefetch } = useQuery("detailVideoIdCache", async () => {
+  const { data: getVideoById, refetch: channelRefetch } = useQuery("videoDetailCache", async () => {
     const response = await API.get(`/video/${id}`);
     return response.data.data;
   });
-
-  console.log(getVideoById);
 
   // Mengambil data subscription user yang login
   const { data: channelLogin, refetch: loginRefetch } = useQuery("channelLoginCache", async () => {
@@ -34,7 +32,7 @@ export default function DetailVideo(props) {
   let channel = [];
 
   channelLogin?.filter((subs) => {
-    if (subs.other_id == getVideoById?.channel.id) {
+    if (subs.other_id == getVideoById.channel.id) {
       channel.push(subs);
     }
     console.log(subs);
@@ -47,8 +45,8 @@ export default function DetailVideo(props) {
     try {
       e.preventDefault();
 
-      const response = await API.post(`/subscribe/${getVideoById.channel.id}`);
-      const plusSub = await API.patch(`/plusSubs/${getVideoById.channel.id}`);
+      const response = await API.post(`/subscribe/${getVideoById?.channel.id}`);
+      const plusSub = await API.patch(`/plusSubs/${getVideoById?.channel.id}`);
       if (response.status == 200 && plusSub.status == 200) {
         channelRefetch();
         loginRefetch();
@@ -152,17 +150,34 @@ export default function DetailVideo(props) {
     }
   };
 
+  // Function untuk meng-update view counter
+  const handleViewCounter = async (videoId) => {
+    try {
+      await API.patch(`/UpdateViews/${videoId}`);
+      // to={`/video-detail/${value.id} `}
+      navigate(`/video-detail/${videoId} `);
+      // channelRefetch();
+    } catch (err) {
+      alert("Error");
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    channelRefetch();
+  }, [id]);
+
   return (
     <>
       <Navbars />
       <Container className="p-0 margin-top-content">
         <Row className="d-flex flex-warp m-0 p-0">
           <Col sm="9" className="p-0 pe-5 m-0">
-            <Card className="border-0 bg-body d-flex flex-column gap-2">
+            <div className="border-0 bg-body d-flex flex-column gap-2">
+              <ReactPlayer width="100%" height="100%" controls playing={true} url={getVideoById?.video} />
               {/* <video controls>
                 <source src={getVideoById?.video} type="video/mp4" />
               </video> */}
-              <ReactPlayer width="100%" height="100%" controls={true} playing={true} url={getVideoById?.video} />
               <Card.Title className="bg-body text-white p-0 m-0">{getVideoById?.title}</Card.Title>
               <div className="d-flex gap-5">
                 <div className="d-flex gap-2">
@@ -178,7 +193,7 @@ export default function DetailVideo(props) {
                   <span className="color-name-channel">{getVideoById?.formatTime}</span>
                 </div>
               </div>
-            </Card>
+            </div>
             <hr style={{ backgroundColor: "white", height: "4px" }} />
             <div>
               <div className="d-flex justify-content-between">
@@ -260,14 +275,14 @@ export default function DetailVideo(props) {
             </div>
           </Col>
           <Col sm="3" className="d-flex flex-column align-items-center p-0 m-0">
-            {getAllVideos?.map((value) => {
+            {getAllVideos?.map((value, index) => {
               return (
-                <div key={value.id} className="d-flex flex-column mb-2 p-2 rounded pt-0" style={{ width: "360px", backgroundColor: "#0b0b0b" }}>
+                <div key={index} className="d-flex flex-column mb-2 p-2 rounded pt-0" style={{ width: "360px", backgroundColor: "#0b0b0b" }}>
                   <Card.Body className="d-flex flex-column gap-2">
-                    <Link to={`/video-detail/${value.id} `} className="text-decoration-none">
+                    <div onClick={() => handleViewCounter(value.id)} className="text-decoration-none">
                       <Card.Img className="width-video rounded mb-2" variant="top" src={value.thumbnail} />
                       <Card.Title className="text-white">{value.title}</Card.Title>
-                    </Link>
+                    </div>
                     <div className="text-decoration-none color-name-channel">
                       <Card.Text className="m-0 p-0">{value.channel.channelName}</Card.Text>
                       <div onClick={() => handleChannelClick(value?.id)} className="d-flex gap-5">

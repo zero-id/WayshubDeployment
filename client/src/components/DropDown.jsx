@@ -12,7 +12,6 @@ function DropDown() {
   const navigate = useNavigate();
   const [state, dispatch] = useContext(UserContext);
   const logout = () => {
-    console.log(state);
     dispatch({
       type: "LOGOUT",
     });
@@ -24,11 +23,11 @@ function DropDown() {
     const response = await API.get(`/channel/${state?.user.id}`);
     return response.data.data;
   });
-  console.log(channelLogin);
+
   return (
     <Dropdown>
-      <Dropdown.Toggle className="bg border-0" id="dropdown-basic">
-        <img src={channelLogin?.photo ? channelLogin.photo : Fp} alt="" width={35} />
+      <Dropdown.Toggle style={{ width: "70px", height: "70px" }} className="bg border-0" id="dropdown-basic">
+        <img src={channelLogin?.photo ? channelLogin.photo : Fp} alt="" width={35} style={{ height: "35px", objectFit: "cover" }} />
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="bg-drop-down">
