@@ -44,7 +44,7 @@ export default function SignUp() {
   };
   return (
     <Container className="position-absolute top-50 start-50 translate-middle">
-      <Row className="p-5">
+      <Row className="d-flex gap-5">
         <Col className="d-flex flex-column" sm="6">
           <img className="p-0 m-0 w-100" src={WaysHub} alt="WayHub" />
           <p className="text-white fs-2 p-0 m-0 pb-4">Join now, share your creations with another people and enjoy other creations</p>
@@ -58,7 +58,7 @@ export default function SignUp() {
           </Button>
         </Col>
         <Col className="align-items-center d-flex">
-          <Form onSubmit={handleSubmit} className="w-75 p-5 m-auto bg-form rounded-4 d-flex flex-column gap-3">
+          <Form onSubmit={handleSubmit} className="w-100 p-4 m-auto bg-form rounded-4 d-flex flex-column gap-3 mb-5">
             <Form.Label className="text-white fs-1 fw-bold p-0 m-0">Sign Up</Form.Label>
             <Form.Control name="email" onChange={handleChance} value={email} type="email" placeholder="email" />
             <Form.Control name="password" onChange={handleChance} value={password} type="password" placeholder="password" />
